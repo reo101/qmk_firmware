@@ -178,7 +178,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 rgb_config_t rgb_matrix_config;
 
-const uint8_t PROGMEM ledmap[][DRIVER_LED_TOTAL][3] = {
+const uint8_t PROGMEM ledmaps[][DRIVER_LED_TOTAL][3] = {
     [_QWERTY] = {
         {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0 }, {  0,  0,  0 }, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0},
         {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0 }, {  0,  0,  0 }, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0}, {  0,   0,   0},
@@ -229,9 +229,9 @@ void keyboard_post_init_user(void) {
 void set_layer_color(int layer) {
     for (int i = 0; i < DRIVER_LED_TOTAL; i++) {
         HSV hsv = {
-            .h = pgm_read_byte(&ledmap[layer][i][0]),
-            .s = pgm_read_byte(&ledmap[layer][i][1]),
-            .v = pgm_read_byte(&ledmap[layer][i][2]),
+            .h = pgm_read_byte(&ledmaps[layer][i][0]),
+            .s = pgm_read_byte(&ledmaps[layer][i][1]),
+            .v = pgm_read_byte(&ledmaps[layer][i][2]),
         };
 
         // Let undefined (value == 0) leds be unaffected
