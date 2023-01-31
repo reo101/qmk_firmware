@@ -20,7 +20,6 @@
 #include QMK_KEYBOARD_H
 #include "muse.h"
 #include "eeprom.h"
-#include "snake.h"
 
 enum planck_layers {
     _QWERTY,
@@ -29,18 +28,12 @@ enum planck_layers {
     _RAISE,
     _ADJUST,
     _FKEYS,
-    _SNAKE,
 };
 
 enum planck_keycodes {
     QWERTY = SAFE_RANGE,
     COLEMAK_DH,
     BACKLIT,
-    SNAKE,
-    SNAKE_LEFT,
-    SNAKE_DOWN,
-    SNAKE_UP,
-    SNAKE_RIGHT,
 };
 
 #define LOWER MO(_LOWER)
@@ -48,6 +41,9 @@ enum planck_keycodes {
 
 #define BTR_ESC MT(MOD_LCTL, KC_ESCAPE)
 #define BTR_ENT MT(MOD_RSFT, KC_ENTER)
+
+// #define BTR_FN MT(MO(_FKEYS), OSL(_FKEYS))
+#define BTR_FN TT(_FKEYS)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -59,14 +55,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |------+------+------+------+------+------+------+------+------+------+------+------|
      * | Shift|   Z  |   X  |   C  |   V  |   B  |   N  |   M  |   ,  |   .  |   /  |Enter |
      * |------+------+------+------+------+------+------+------+------+------+------+------|
-     * | Brite| Ctrl | GUI  | Alt  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
+     * |  Fn  | Ctrl | GUI  | Alt  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
      * `-----------------------------------------------------------------------------------'
      */
     [_QWERTY] = LAYOUT_planck_grid(
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
         BTR_ESC, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, BTR_ENT,
-        BACKLIT, KC_LCTL, KC_LGUI, KC_LALT, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+        BTR_FN,  KC_LCTL, KC_LGUI, KC_LALT, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
     ),
 
     /* Colemak DH
@@ -77,14 +73,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |------+------+------+------+------+------+------+------+------+------+------+------|
      * | Shift|   Z  |   X  |   C  |   D  |   B  |   K  |   H  |   ,  |   .  |   /  |Enter |
      * |------+------+------+------+------+------+------+------+------+------+------+------|
-     * | Brite| Ctrl | GUI  | Alt  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
+     * |  Fn  | Ctrl | GUI  | Alt  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
      * `-----------------------------------------------------------------------------------'
      */
     [_COLEMAK_DH] = LAYOUT_planck_grid(
         KC_TAB,  KC_Q,    KC_W,    KC_F,    KC_P,    KC_G,    KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN, KC_BSPC,
         KC_ESC,  KC_A,    KC_R,    KC_S,    KC_T,    KC_V,    KC_M,    KC_N,    KC_E,    KC_I,    KC_O,    KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_D,    KC_B,    KC_K,    KC_H,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT ,
-        BACKLIT, KC_LCTL, KC_LGUI, KC_LALT, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+        BTR_FN,  KC_LCTL, KC_LGUI, KC_LALT, LOWER,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
     ),
 
     /* Lower
@@ -139,85 +135,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, QK_BOOT, DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,    RGB_VAI, RGB_VAD, KC_DEL ,
         _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK_DH, _______, _______, _______,
         _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______,    _______, _______, _______,
-        _______, _______, _______, _______, _______, SNAKE,   SNAKE,   _______, _______,    _______, _______, _______
+        _______, _______, _______, _______, _______, _______, _______, _______, _______,    _______, _______, _______
     ),
 
     /* Function Keys
      * ,------------------------------------------------------------------------------------.
      * |      |      |      |      |      |       |      |      |      |      |      |      |
      * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * |      |  F1  |  F2  |  F3  |  F4  |  F5   |  F6  |  F7  |  F8  |  F9  |  F10 |      |
+     * |  F1  |  F2  |  F3  |  F4  |  F5   |  F6  |  F7  |  F8  |  F9  |  F10 |  F11 |  F12 |
      * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * |      | F11  | F12  | F13  | F14  | F15   | F16  | F17  | F18  | F19  |  F20 |      |
+     * | F13  | F14  | F15  | F16  | F17   | F18  | F19  | F20  | F21  |  F22 |  F23 |  F24 |
      * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * |      |      |      |      |   ⇩  |              |   ⇩  |      |      |      |      |
+     * |  Fn  |      |      |      |   ⇩  |              |   ⇩  |      |      |      |      |
      * `------------------------------------------------------------------------------------'
      */
     [_FKEYS] = LAYOUT_planck_grid(
         XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-        XXXXXXX, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  XXXXXXX,
-        XXXXXXX, KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  XXXXXXX,
-        XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, LOWER,   XXXXXXX, XXXXXXX, RAISE,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
+        KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
+        KC_F13,  KC_F14,  KC_F15,  KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,  KC_F22,  KC_F23,  KC_F24,
+        BTR_FN,  XXXXXXX, XXXXXXX, XXXXXXX, LOWER,   XXXXXXX, XXXXXXX, RAISE,   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX
     ),
-
-    /* Snake
-     * ,------------------------------------------------------------------------------------.
-     * |      |      |      |      |      |       |      |      |      |      |      |      |
-     * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * | Exit |      |      |      |      |       |      |      |      |      |      |      |
-     * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * |      |      |      |      |      |       |      |      |      |      |      |      |
-     * |------+------+------+------+------+-------+------+------+------+------+------+------|
-     * |      |      |      |      |      |              |      |   <  |   ^  |   v  |   >  |
-     * `------------------------------------------------------------------------------------'
-     */
-    [_SNAKE] = LAYOUT_planck_grid(
-        _______, _______, _______, _______, _______, _______, _______, _______, _______,    _______,    _______,  _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______,    _______,    _______,  _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, _______,    _______,    _______,  _______,
-        _______, _______, _______, _______, _______, _______, _______, _______, SNAKE_LEFT, SNAKE_DOWN, SNAKE_UP, SNAKE_RIGHT
-    ),
-
 };
-
-// Snake
-
-bool playing_snake = false;
-
-uint8_t snake_ledmap[DRIVER_LED_TOTAL][3] = {0};
-
-int snake_layer = _ADJUST;
-
-void set_snake_layer(void);
-void set_snake_layer() {
-    for (int i = 0; i < DRIVER_LED_TOTAL; i++) {
-        HSV hsv = {
-            .h = pgm_read_byte(&snake_ledmap[i][0]),
-            .s = pgm_read_byte(&snake_ledmap[i][1]),
-            .v = pgm_read_byte(&snake_ledmap[i][2]),
-        };
-        RGB rgb = hsv_to_rgb(hsv);
-
-        float f = (float)rgb_matrix_config.hsv.v / UINT8_MAX;
-        rgb_matrix_set_color(i, f * rgb.r, f * rgb.g, f * rgb.b);
-    }
-}
-
-void snake(void);
-void snake() {
-    static uint8_t snake_index = 0;
-    static uint16_t snake_timer;
-
-    snake_ledmap[snake_index][0] = snake_index*2;
-    snake_ledmap[snake_index][1] = 255;
-    snake_ledmap[snake_index][2] = 255;
-
-    snake_index = (snake_index + 1) % DRIVER_LED_TOTAL;
-
-    snake_timer = timer_read();
-
-    while (timer_elapsed(snake_timer) < 200) {}
-}
 
 // RGB Lighting
 
@@ -291,6 +229,12 @@ uint8_t PROGMEM ledmaps[][DRIVER_LED_TOTAL][3] = {
         {RGB_BLACK}, {RGB_BLACK},  {RGB_BLACK},  {HSV_BLUE},  {HSV_RED},   {HSV_YELLOW}, {HSV_YELLOW}, {HSV_GREEN}, {HSV_TEAL},  {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK},
         {RGB_BLACK}, {HSV_BLUE},   {HSV_RED},    {HSV_BLUE},  {HSV_RED},   {HSV_RED},    {HSV_BLUE},   {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK},
         {RGB_BLACK}, {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK}, {RGB_BLACK},         {RGB_BLACK},        {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK},
+    },
+    [_FKEYS] = {
+        {RGB_BLACK}, {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},
+        {RGB_BLACK}, {HSV_ORANG1}, {HSV_ORANG2}, {HSV_ORANG3}, {HSV_ORANG4}, {HSV_ORANG5}, {HSV_ORANG5}, {HSV_ORANG4}, {HSV_ORANG3}, {HSV_ORANG2}, {HSV_ORANG1}, {RGB_BLACK},
+        {RGB_BLACK}, {HSV_ORANG5}, {HSV_ORANG4}, {HSV_ORANG3}, {HSV_ORANG2}, {HSV_ORANG1}, {HSV_ORANG1}, {HSV_ORANG2}, {HSV_ORANG3}, {HSV_ORANG4}, {HSV_ORANG5},  {RGB_BLACK},
+        {RGB_BLACK}, {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},          {RGB_BLACK},        {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},  {RGB_BLACK},
     },
 };
 
@@ -366,10 +310,6 @@ void set_layer_color(int layer) {
 void rgb_matrix_indicators_user(void) {
     // if (keyboard_config.disable_layer_led) { return; }
 
-    if (playing_snake) {
-        set_snake_layer();
-    }
-
     uint8_t layer = biton32(layer_state);
 
     switch (layer) {
@@ -408,60 +348,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return false;
         }
-        case BACKLIT: {
-            if (record->event.pressed) {
-                register_code(KC_RSFT);
-                #ifdef BACKLIGHT_ENABLE
-                backlight_step();
-                #endif
-            } else {
-                unregister_code(KC_RSFT);
-            }
-            return false;
-        }
-        case SNAKE: {
-            if (record->event.pressed) {
-                if (rgb_matrix_get_mode() == RGB_MATRIX_CUSTOM_SNAKE) {
-                    rgb_matrix_mode(last_mode);
-
-                    layer_off(_SNAKE);
-                } else {
-                    last_mode = rgb_matrix_get_mode();
-                    rgb_matrix_mode(RGB_MATRIX_CUSTOM_SNAKE);
-
-                    layer_on(_SNAKE);
-                }
-            }
-            return false;
-        }
-        case SNAKE_LEFT: {
-            if (snake_status.last_moved_direction != DIRECTION_RIGHT) {
-                snake_status.direction = DIRECTION_LEFT;
-            }
-            return false;
-            break;
-        }
-        case SNAKE_DOWN: {
-            if (snake_status.last_moved_direction != DIRECTION_UP) {
-                snake_status.direction = DIRECTION_DOWN;
-            }
-            return false;
-            break;
-        }
-        case SNAKE_UP: {
-            if (snake_status.last_moved_direction != DIRECTION_DOWN) {
-                snake_status.direction = DIRECTION_UP;
-            }
-            return false;
-            break;
-        }
-        case SNAKE_RIGHT: {
-            if (snake_status.last_moved_direction != DIRECTION_LEFT) {
-                snake_status.direction = DIRECTION_RIGHT;
-            }
-            return false;
-            break;
-        }
+        // case BACKLIT: {
+        //     if (record->event.pressed) {
+        //         register_code(KC_RSFT);
+        //         #ifdef BACKLIGHT_ENABLE
+        //         backlight_step();
+        //         #endif
+        //     } else {
+        //         unregister_code(KC_RSFT);
+        //     }
+        //     return false;
+        // }
         default: {
             return true;
         }
