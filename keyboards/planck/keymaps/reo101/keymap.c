@@ -132,9 +132,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * `-----------------------------------------------------------------------------------'
      */
     [_ADJUST] = LAYOUT_planck_grid(
-        _______, QK_BOOT, DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,    RGB_VAI, RGB_VAD, KC_DEL ,
-        _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK_DH, _______, _______, _______,
-        _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______,    _______, _______, _______,
+        _______, QK_BOOT, _______, RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,    RGB_VAI, RGB_VAD, KC_DEL ,
+        _______, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK_DH, _______, _______, _______,
+        _______, _______, _______, MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______,    _______, _______, _______,
         _______, _______, _______, _______, _______, _______, _______, _______, _______,    _______, _______, _______
     ),
 
@@ -199,7 +199,7 @@ rgb_config_t rgb_matrix_config;
 
 #endif
 
-uint8_t PROGMEM ledmaps[][DRIVER_LED_TOTAL][3] = {
+uint8_t PROGMEM ledmaps[][RGB_MATRIX_LED_COUNT][3] = {
     [_QWERTY] = {
         {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK},
         {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK}, {RGB_BLACK},
@@ -243,7 +243,7 @@ void keyboard_post_init_user(void) {
 }
 
 void set_layer_color(int layer) {
-    for (int i = 0; i < DRIVER_LED_TOTAL; i++) {
+    for (int i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         #ifdef HSV_COLOURS
             HSV hsv = {
                 .h = pgm_read_byte(&ledmaps[layer][i][0]),
@@ -307,7 +307,7 @@ void set_layer_color(int layer) {
     }
 }
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
     // if (keyboard_config.disable_layer_led) { return; }
 
     uint8_t layer = biton32(layer_state);
@@ -321,6 +321,8 @@ void rgb_matrix_indicators_user(void) {
                 rgb_matrix_set_color_all(0, 0, 0);
             break;
     }
+
+    return true;
 }
 
 // Layer logic
